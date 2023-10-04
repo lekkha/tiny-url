@@ -1,49 +1,49 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const app = express();
-const port = 3000;
+const express = require('express')
+const bodyParser = require('body-parser')
+const app = express()
+const port = 3000
 
 var admin = require("firebase-admin");
-var serviceAccount = require("./shorten-f103b-firebase-adminsdk-if7ln-5c317078f9.json");
-const { response } = require("express");
+
+var serviceAccount = require("./short1-980a8-firebase-adminsdk-szyq5-37fc0fb8ce.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-const static = express.static("public");
+//const static 
+const static = express.static('public');
 
 const urlsdb = admin.firestore().collection("urlsdb");
 const usersdb = admin.firestore().collection("usersdb");
 
+//app.use
 app.use(static);
 app.use(bodyParser.json());
-
 // app.use((req, res, next) => {
-//     console.log("We intercepted the req");
-//     next();
+//     console.log("We intercepted the request"); 
+//     next(); 
 // })
 
-app.get("/:short", (req, res) => {
-    console.log(req.params);
+app.get('/:short', (req, res) => {
+    console.log(req.params); 
     const short = req.params.short;
-
     const doc = urlsdb.doc(short);
 
     doc.get().then(response => {
         const data = response.data();
-        // console.log(data);
+        //console.log(data);
+
         if(data && data.url){
             res.redirect(301, data.url);
         } else {
-            res.redirect(301, "https://codeforcause.org");
+            res.redirect(301, "https://leetcode.com/");
         }
     })
+    // res.send('we will redirect you to' + short)
+})
 
-    // res.send("We will redirect you to " + short)
-});
-
-app.post("/admin/urls/", (req, res) => {
+app.post('/admin/urls', (req, res) => {
     const {email, password, short, url} = req.body;
 
     usersdb.doc(email).get().then(response=>{
@@ -58,10 +58,10 @@ app.post("/admin/urls/", (req, res) => {
             res.send(403, "Not possible")
         }
     })
-  
-//   res.send("Hello from another!");
-});
+  })
+
+//app.get
 
 app.listen(port, () => {
-  console.log(`App listening at http://localhost:${port}`);
-});
+  console.log(`Example app listening at http://localhost:${port}`)
+})
